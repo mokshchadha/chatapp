@@ -16,10 +16,22 @@ class _NewMessageState extends State<NewMessage> {
     FocusScope.of(context).unfocus();
     final user = FirebaseAuth.instance.currentUser;
 
+    final imageUrl = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(FirebaseAuth.instance.currentUser?.uid)
+        .get()
+        .then((DocumentSnapshot doc) {
+      final data = doc.data() as Map<String, dynamic>;
+      return data['image'];
+    });
+
+    print(imageUrl);
+
     FirebaseFirestore.instance.collection('chat').add({
       'text': _enteredValue,
       'createdAt': Timestamp.now(),
-      'userId': user?.email
+      'userId': user?.email,
+      'imageUrl': imageUrl
     });
     _controller.clear();
     setState(() {

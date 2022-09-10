@@ -1,6 +1,8 @@
+import 'dart:io';
 import 'package:chatapp/widgets/auth/auth_form.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -20,6 +22,7 @@ class _AuthScreenState extends State<AuthScreen> {
     required String userName,
     required String password,
     required bool isLogin,
+    required File image,
     required BuildContext ctx,
   }) async {
     try {
@@ -36,15 +39,24 @@ class _AuthScreenState extends State<AuthScreen> {
           });
           return;
         }
+
         authResult = await _auth.createUserWithEmailAndPassword(
             email: email, password: password);
+
+        final uid = authResult.user?.uid;
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('user_image')
+            .child('$uid.jpg');
+
+        await ref.putFile(image);
+
+        final url = await ref.getDownloadURL();
+
         FirebaseFirestore.instance
             .collection('users')
             .doc(authResult.user!.uid)
-            .set({
-          'userName': userName,
-          'email': email,
-        });
+            .set({'userName': userName, 'email': email, 'image': url});
         setState(() {
           isLoading = false;
         });

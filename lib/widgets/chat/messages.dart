@@ -24,6 +24,7 @@ class Messages extends StatelessWidget {
               dynamic messageText = data.docs[idx].get('text');
               dynamic createdAt = data.docs[idx].get('createdAt');
               dynamic sender = data.docs[idx].get('userId');
+              dynamic imageUrl = data.docs[idx].get('imageUrl');
 
               dynamic key =
                   ValueKey(data.docs[idx].reference.id); //to make it optimal
@@ -34,7 +35,8 @@ class Messages extends StatelessWidget {
                     ? MainAxisAlignment.end
                     : MainAxisAlignment.start,
                 children: [
-                  MessageBubble(messageText, createdAt, sender, key: key)
+                  MessageBubble(messageText, createdAt, sender, imageUrl,
+                      key: key)
                 ],
               );
             },
